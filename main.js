@@ -34,7 +34,7 @@ import {
     PHONENUMBER_MCC,
     delay
     } from '@adiwajshing/baileys'
-import { JSONfile } from 'lowdb/node'
+import { JSONFile } from 'lowdb/node'
 import { Low } from 'lowdb'
 import { makeWASocket, protoType, serialize } from './lib/simple.js'
 import {
