@@ -1,14 +1,11 @@
-/*####################################
-                 KAGUYA SAMA
-             MADE BY LEXIC TEAM
-       
-✅ WhatsApp: wa.me/6281389103794
-👥 Github: https://github.com/LEXIC-TEAM
-#####################################*/
-import gtts from 'node-gtts';
-import ytdl from 'ytdl-core';
-import yts from'yt-search';
-import fs from'fs';
+// *[ PLAY BY Y2MATE ]*
+// PLUGINS ESM
+// https://whatsapp.com/channel/0029Vai8a3K4CrfZmzVnGI3m
+// Thanks to Yuki Hiiragi
+
+import axios from "axios"
+import yts from "yt-search";
+import fetch from "node-fetch";
 import { pipeline } from'stream';
 import { promisify } from'util';
 const streamPipeline = promisify(pipeline);
@@ -18,8 +15,8 @@ function trimYouTubeUrl(url) {
   return trimmedUrl;
 }
 
-const handler = async (m, { conn, command, text, usedPrefix }) => {
-  conn.play = conn.play ? conn.play : {};
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+ conn.play = conn.play ? conn.play : {};
   if (!text) throw `*• Example:* ${usedPrefix + command} Kaguya love is war`;
   const key = await conn.sendMessage(m.chat, { text: wait }, { quoted: m });
 
@@ -40,36 +37,27 @@ conn.play[m.sender] = {
       reply: t
 
     }
-         let Ytdl = await ytmp3(url)
-      let dls = "Play audio succes"
+		const ytdl = new Ytdl();
+        const result = await ytdl.play(url)
+		let title1 = result.title
+		conn.sendFile(m.chat, result.audio['128'].url, title1 + ".mp3", "", m, 0, {
+			mimetype: "audio/mpeg",
 
-            let ytthumb = await (await conn.getFile(Ytdl.meta.image)).data
-            
-
-  let doc = {
-    audio: Ytdl.buffer,
-
-                
-
-                fileName: Ytdl.meta.title,
-    
-    mimetype: 'audio/mp4',
-   
-    contextInfo: {
+		ptt: true,
+			contextInfo: {
+		
       externalAdReply: {
         showAdAttribution: true,
         mediaType: 2,
         mediaUrl: url,
-        title: Ytdl.meta.title,
+        title: title1,
         body: wm,
+       thumbnail: (await fetch(search.all[0].thumbnail)).buffer(),
         sourceUrl: url,
-        thumbnail: ytthumb
       }
     }
-  };
-
-  await conn.sendMessage(m.chat, doc, { quoted: t });
-setTimeout(() => {
+		});
+	setTimeout(() => {
 delete conn.play[m.sender]
 }, 5000)
   // Delete the audio file
@@ -88,122 +76,113 @@ handler.before = async (m, { conn }) => {
   if (m.text == "Y") {
     m.reply(wait);
     let { url, reply } = conn.play[m.sender];
-    let video = await ytPlayMp4(url);
-    await conn.sendMessage(m.chat, { video: { url: video.url }, caption: `*✅ Succes Download videos*` }, { quoted: reply });
+    const ytdl = new Ytdl();
+        const vide = await ytdl.play(url)
+    await conn.sendMessage(m.chat, { video: { url: vide.video['360'].url }, caption: `*✅ Succes Download videos*` }, { quoted: reply });
     delete conn.play[m.sender];
   } else if (m.text == "N") {
     m.reply("*✅ Succes canceled videos*");
     delete conn.play[m.sender];
   } else return;
 };
+handler.help = ["play"];
+handler.tags = ["downloader"];
+handler.command = ["play"];
 
-handler.help = ['play'].map((v) => v + ' *[query]*');
-handler.tags = ['downloader'];
-handler.command = /^(play)$/i;
+handler.limit = true;
 
-export default handler
 
-function ytPlayMp4(query) {
-    return new Promise((resolve, reject) => {
-        try {
-            const search = yts(query)
-            .then((data) => {
-                const url = []
-                const pormat = data.all
-                for (let i = 0; i < pormat.length; i++) {
-                    if (pormat[i].type == 'video') {
-                        let dapet = pormat[i]
-                        url.push(dapet.url)
-                    }
-                }
-                const id = ytdl.getVideoID(url[0])
-                const yutub = ytdl.getInfo(`https://www.youtube.com/watch?v=${id}`)
-                .then((data) => {
-                    let pormat = data.formats
-                    let video = []
-                    for (let i = 0; i < pormat.length; i++) {
-                    if (pormat[i].container == 'mp4' && pormat[i].hasVideo == true && pormat[i].hasAudio == true) {
-                        let vid = pormat[i]
-                        video.push(vid.url)
-                    }
-                   }
-                    const title = data.player_response.microformat.playerMicroformatRenderer.title.simpleText
-                    const thumb = data.player_response.microformat.playerMicroformatRenderer.thumbnail.thumbnails[0].url
-                    const channel = data.player_response.microformat.playerMicroformatRenderer.ownerChannelName
-                    const views = data.player_response.microformat.playerMicroformatRenderer.viewCount
-                    const published = data.player_response.microformat.playerMicroformatRenderer.publishDate
-                    const result = {
-                    title: title,
-                    thumb: thumb,
-                    channel: channel,
-                    published: published,
-                    views: views,
-                    url: video[0]
-                    }
-                    return(result)
-                })
-                return(yutub)
-            })
-            resolve(search)
-        } catch (error) {
-            reject(error)
-        }
-        console.log(error)
-    })
-}
+export default handler;
 
-async function ytmp3(url) {
-    try {
-        const {
-            videoDetails
-        } = await ytdl.getInfo(url, {
-            lang: "id"
-        });
-
-        const stream = ytdl(url, {
-            filter: "audioonly",
-            quality: 140
-        });
-        const chunks = [];
-
-        stream.on("data", (chunk) => {
-            chunks.push(chunk);
-        });
-
-        await new Promise((resolve, reject) => {
-            stream.on("end", resolve);
-            stream.on("error", reject);
-        });
-
-        const buffer = Buffer.concat(chunks);
-
-        return {
-            meta: {
-                title: videoDetails.title,
-                channel: videoDetails.author.name,
-                seconds: videoDetails.lengthSeconds,
-                description: videoDetails.description,
-                image: videoDetails.thumbnails.slice(-1)[0].url,
-            },
-            buffer: buffer,
-            size: buffer.length,
-        };
-    } catch (error) {
-        throw error;
+class Ytdl {
+    constructor() {
+        this.baseUrl = 'https://id-y2mate.com';
     }
-};
 
-function tts(text, lang = 'id') {
-    return new Promise((resolve, reject) => {
+    async search(url) {
+        const requestData = new URLSearchParams({
+            k_query: url,
+            k_page: 'home',
+            hl: '',
+            q_auto: '0'
+        });
+
+        const requestHeaders = {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': '*/*',
+            'X-Requested-With': 'XMLHttpRequest'
+        };
+
         try {
-            let tts = gtts(lang)
-            let filePath = join(__dirname, '../tmp', (1 * new Date) + '.wav')
-            tts.save(filePath, text, () => {
-                resolve(readFileSync(filePath))
-                unlinkSync(filePath)
-            })
-        } catch (e) {
-            reject(e)
+            const response = await axios.post(`${this.baseUrl}/mates/analyzeV2/ajax`, requestData, {
+                headers: requestHeaders
+            });
+
+            const responseData = response.data;
+            console.log(responseData);
+            return responseData;
+        } catch (error) {
+            if (error.response) {
+                console.error(`HTTP error! status: ${error.response.status}`);
+            } else {
+                console.error('Axios error: ', error.message);
+            }
         }
-    })
+    }
+
+    async convert(videoId, key) {
+        const requestData = new URLSearchParams({
+            vid: videoId,
+            k: key
+        });
+
+        const requestHeaders = {
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'Accept': '*/*',
+            'X-Requested-With': 'XMLHttpRequest',
+            'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Mobile Safari/537.36',
+            'Referer': `${this.baseUrl}/youtube/${videoId}`
+        };
+
+        try {
+            const response = await axios.post(`${this.baseUrl}/mates/convertV2/index`, requestData, {
+                headers: requestHeaders
+            });
+
+            const responseData = response.data;
+            console.log(responseData);
+            return responseData;
+        } catch (error) {
+            if (error.response) {
+                console.error(`HTTP error! status: ${error.response.status}`);
+            } else {
+                console.error('Axios error: ', error.message);
+            }
+        }
+    }
+
+    async play(url) {
+        let { links, vid, title } = await this.search(url);
+        let video = {}, audio = {};
+
+        for (let i in links.mp4) {
+            let input = links.mp4[i];
+            let { fquality, dlink } = await this.convert(vid, input.k);
+            video[fquality] = {
+                size: input.q,
+                url: dlink
+            };
+        }
+
+        for (let i in links.mp3) {
+            let input = links.mp3[i];
+            let { fquality, dlink } = await this.convert(vid, input.k);
+            audio[fquality] = {
+                size: input.q,
+                url: dlink
+            };
+        }
+
+        return { title, video, audio };
+    }
 }
