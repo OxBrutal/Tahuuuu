@@ -47,8 +47,8 @@ global.packname = `\t\t「 Simple Bot Whatsapp 」\n\t\t「 By : Furina 」\n\t\
 global.author = ''
 
 //===========> IMAGE <==============//
-global.fotonya = pickRandom(["https://telegra.ph/file/33be03f2ccd4588b21567.jpg","https://telegra.ph/file/c46b2ac5bc2b59521ed85.jpg","https://telegra.ph/file/096005288cc40bbb3c33b.jpg"])
-global.fotonya2 = pickRandom(["https://telegra.ph/file/33be03f2ccd4588b21567.jpg","https://telegra.ph/file/c46b2ac5bc2b59521ed85.jpg","https://telegra.ph/file/096005288cc40bbb3c33b.jpg"])// Link Sosmed
+global.fotonya = pickRandom(["https://c4.wallpaperflare.com/wallpaper/681/1024/843/anime-anime-girls-azur-lane-manjuu-mutsu-azur-lane-hd-wallpaper-preview.jpg","https://c4.wallpaperflare.com/wallpaper/946/989/138/anime-azur-lane-nagato-azur-lane-hd-wallpaper-preview.jpg","https://static.zerochan.net/Nagato.%28Azur.Lane%29.full.3037778.png"])
+global.fotonya2 =  pickRandom(["https://c4.wallpaperflare.com/wallpaper/681/1024/843/anime-anime-girls-azur-lane-manjuu-mutsu-azur-lane-hd-wallpaper-preview.jpg","https://c4.wallpaperflare.com/wallpaper/946/989/138/anime-azur-lane-nagato-azur-lane-hd-wallpaper-preview.jpg","https://static.zerochan.net/Nagato.%28Azur.Lane%29.full.3037778.png"])
 global.thumb = readFileSync('./image/me.png')
 global.thumb2 = readFileSync('./image/me2.png')
 global.multiplier = 69 // The higher, The harder levelup
